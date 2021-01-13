@@ -27,7 +27,7 @@ spec:
         name: secrets-probe
       params:
         - name: repository
-          value: "https://github.com/huayuenh/mix"
+          value: $(tasks.extract-repository-url.results.extracted-value)
       workspaces:
         - name: workspace
           workspace: pipeline-ws      
