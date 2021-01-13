@@ -8,6 +8,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: slack
+  - type: git
+    service: ${TEKTON_CATALOG_REPO}
+    branch: master
+    path: toolchain
 triggers:
   - type: git
     name: commit-push
