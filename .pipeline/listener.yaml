@@ -1,0 +1,155 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-secrets-probe
+spec:
+  params:
+    - name: kp-secret-1-literal
+    - name: kp-secret-2-literal
+    - name: kp-secret-3-literal
+    - name: hv-secret-1-literal
+    - name: hv-secret-2-literal
+    - name: hv-secret-3-literal
+    - name: hybrid-secret-1-literal
+    - name: hybrid-secret-2-literal
+    - name: hybrid-secret-3-literal
+    - name: pipeline-debug
+      default: "0"
+    - name: env
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: secrets-probe-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: secrets-probe-$(uid)
+      spec:
+        pipelineRef:
+          name: secrets-probe-pipeline
+        params:
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+          - name: kp-secret-1-literal
+            value: $(params.kp-secret-1-literal)
+          - name: kp-secret-2-literal
+            value: $(params.kp-secret-2-literal)
+          - name: kp-secret-3-literal
+            value: $(params.kp-secret-3-literal)
+          - name: hv-secret-1-literal
+            value: $(params.hv-secret-1-literal)
+          - name: hv-secret-2-literal
+            value: $(params.hv-secret-2-literal)
+          - name: hv-secret-3-literal
+            value: $(params.hv-secret-3-literal)
+          - name: hybrid-secret-1-literal
+            value: $(params.hybrid-secret-1-literal)
+          - name: hybrid-secret-2-literal
+            value: $(params.hybrid-secret-2-literal)
+          - name: hybrid-secret-3-literal
+            value: $(params.hybrid-secret-3-literal)
+          - name: env
+            value: $(params.env)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: secrets-probe-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-manual
+spec:
+  params:
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: manual-run
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-manual
+      template:
+        name: trigger-template-secrets-probe
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: github-commit
+spec:
+  params:
+    - name: repository
+      value: "$(event.repository.url)"
+    - name: branch
+      value: "$(event.ref)"
+    - name: revision
+      value: "$(event.head_commit.id)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: github-commit
+spec:
+  triggers:
+    - binding:
+        name: github-commit
+      template:
+        name: trigger-template-secrets-probe
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: grit-or-gitlab-commit
+spec:
+  params:
+    - name: repository
+      value: "$(event.repository.git_http_url)"
+    - name: branch
+      value: "$(event.ref)"
+    - name: revision
+      value: "$(event.checkout_sha)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: grit-or-gitlab-commit
+spec:
+  triggers:
+    - binding:
+        name: grit-or-gitlab-commit
+      template:
+        name: trigger-template-secrets-probe
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: bitbucket-commit
+spec:
+  params:
+    - name: repository
+      value: "$(event.repository.links.html.href)"
+    - name: revision
+      value: "$(event.push.changes[0].new.target.hash)"
+    - name: branch
+      value: "$(event.push.changes[0].new.name)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: bitbucket-commit
+spec:
+  triggers:
+    - binding:
+        name: bitbucket-commit
+      template:
+        name: trigger-template-secrets-probe

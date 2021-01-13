@@ -1,0 +1,71 @@
+---
+inputs:
+  - type: git
+    branch: ${PIPELINE_REPO_BRANCH}
+    service: ${PIPELINE_REPO}
+    path: .pipeline
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: slack
+triggers:
+  - type: git
+    name: commit-push
+    eventListener: ${GIT_COMMIT_EVENT_LISTENER_NAME}
+    service: ${APP_REPO}
+    branch: master
+    events: { "push": true }
+  - type: manual
+    name: manual-run
+    eventListener: manual-run
+    properties: []
+properties:
+  - name: kp-secret-1
+    type: SECURE
+  - name: kp-secret-2
+    type: SECURE
+  - name: kp-secret-3
+    type: SECURE
+  - name: hv-secret-1
+    type: SECURE
+  - name: hv-secret-2
+    type: SECURE
+  - name: hv-secret-3
+    type: SECURE
+  - name: hybrid-secret-1
+    type: SECURE
+  - name: hybrid-secret-2
+    type: SECURE
+  - name: hybrid-secret-3
+    type: SECURE
+  - name: hybrid-secret-1-literal
+    type: text
+    value: Hybrid Secrets Probe Secret 1
+  - name: hybrid-secret-2-literal
+    type: text
+    value: Hybrid Secrets Probe Secret 2
+  - name: hybrid-secret-3-literal
+    type: text
+    value: Hybrid Secrets Probe Secret 3
+  - name: hv-secret-1-literal
+    type: text
+    value: HV Secrets Probe Secret 1
+  - name: hv-secret-2-literal
+    type: text
+    value: HV Secrets Probe Secret 2
+  - name: hv-secret-3-literal
+    type: text
+    value: HV Secrets Probe Secret 3
+  - name: kp-secret-1-literal
+    type: text
+    value: KP Secrets Probe Secret 1
+  - name: kp-secret-2-literal
+    type: text
+    value: KP Secrets Probe Secret 2
+  - name: kp-secret-3-literal
+    type: text
+    value: KP Secrets Probe Secret 3
+  - name: env
+    type: text
+    value: Environment
+    

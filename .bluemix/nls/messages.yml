@@ -1,0 +1,8 @@
+---
+#The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
+template.name: "Develop a Secrets Probe pipeline"
+template.description: "Secrets Management Probe toolchain"
+template.gettingStarted: " **Your toolchain is ready!**"
+deploy.title: "Secrets Probe"
+deploy.description: "Secrets Probe"
+deploy.longDescription: "Secrets Probe"
